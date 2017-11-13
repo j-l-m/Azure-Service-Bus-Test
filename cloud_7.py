@@ -10,11 +10,11 @@ def send_messages(nothinghere):
 	bus_service = ServiceBusService(
 	service_namespace='jlmtestservicebus1',
 	shared_access_key_name='RootManageSharedAccessKey',
-	shared_access_key_value='1uVJLGdGJg77Ovsx6HQtIkGD0mSLp4qA6x7zLYzQ/i0=')
+	shared_access_key_value='Bdlyngz0JiuScJjBoFEDBJiDTPNB9DCNZFj4cqm49D4=')
 
 	table_service = TableService(
 	account_name='jlmteststorage1', 
-	account_key='nrldEBsy1SDIU30os0H779+yxLPFwibSY0nHeWK3cFhz9pwaAFuZI27VFk7kJLZN2iJ/G0EsgBm2geqiC5Yh8w==')
+	account_key='f9LanXceS3/JujWIH9f6xKxhYmCUEf3XlwBeDUUSMBdvSZcpsII5/I+4VxpkbVtBhe1CW//lBoLBSGzpWfR9eQ==')
 
 	proc_id = str(uuid.uuid1())
 	print("running...")
