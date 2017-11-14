@@ -1,4 +1,5 @@
-sudo apt install python-pip
+#!/bin/sh
+sudo apt install -y python-pip
 
 pip install azure
 
