@@ -1,20 +1,29 @@
 from azure.servicebus import ServiceBusService, Message, Queue
 from azure.storage.table import TableService, Entity
+from azure.storage.queue import QueueService
 import multiprocessing
 import json
 import uuid
 import time
 
 
-def send_messages(nothinghere):
+def rec_messages(process_name):
+
 	bus_service = ServiceBusService(
-	service_namespace='jlmtestservicebus1',
-	shared_access_key_name='RootManageSharedAccessKey',
-	shared_access_key_value='Bdlyngz0JiuScJjBoFEDBJiDTPNB9DCNZFj4cqm49D4=')
+		service_namespace='jlmtestservicebus1',
+		shared_access_key_name='RootManageSharedAccessKey',
+		shared_access_key_value='Bdlyngz0JiuScJjBoFEDBJiDTPNB9DCNZFj4cqm49D4=')
+
+	store_account_name = 'jlmteststorage1'
+	store_account_key  = 'f9LanXceS3/JujWIH9f6xKxhYmCUEf3XlwBeDUUSMBdvSZcpsII5/I+4VxpkbVtBhe1CW//lBoLBSGzpWfR9eQ=='
 
 	table_service = TableService(
-	account_name='jlmteststorage1', 
-	account_key='f9LanXceS3/JujWIH9f6xKxhYmCUEf3XlwBeDUUSMBdvSZcpsII5/I+4VxpkbVtBhe1CW//lBoLBSGzpWfR9eQ==')
+		account_name = store_account_name, 
+		account_key = store_account_key)
+
+	queue_service = QueueService(
+		account_name='myaccount', 
+		account_key='mykey')
 
 	proc_id = str(uuid.uuid1())
 	print("running...")
@@ -31,6 +40,7 @@ def send_messages(nothinghere):
 						"data" : "Error"
 					}
 					table_service.insert_entity('fail', j)
+					queue_service.put_message('jlmtestregqueue1', u'Error Message')
 				
 				else:			
 					j = msg.body
@@ -62,8 +72,8 @@ if __name__ == '__main__':
 	for i in range(7):
 		params.append("%s: %s" % ("Process", i))
 	#try:
-	p.map(send_messages, params)
-	print("running...")
+	p.map(rec_messages, params)
+	print("hi...")
 
 	while 1:
 		pass
