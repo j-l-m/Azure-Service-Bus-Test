@@ -32,8 +32,8 @@ def rec_messages(process_name):
 
 	#create storage queue service object
 	queue_service = QueueService(
-		account_name='myaccount', 
-		account_key='mykey')
+		account_name = store_account_name, 
+		account_key = store_account_key)
 
 	#generate a uuid for the process.
 	#this uuid is used as the partition key
