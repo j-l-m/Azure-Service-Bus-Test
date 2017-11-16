@@ -1,0 +1,393 @@
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "parameters": {
+        "loadBalancers_testscalesetlb_name": {
+            "defaultValue": "jlmtestscalesetlb",
+            "type": "String"
+        },
+        "autoscalesettings_testscaleset1_name": {
+            "defaultValue": "jlmtestscaleset1",
+            "type": "String"
+        },
+        "virtualNetworks_testscalesetVnet_name": {
+            "defaultValue": "jlmtestscalesetVnet",
+            "type": "String"
+        },
+        "publicIPAddresses_publicipaddress_name": {
+            "defaultValue": "jlmtestpublicipaddress1",
+            "type": "String"
+        },
+        "virtualMachineScaleSets_testscaleset_name": {
+            "defaultValue": "jlmtestscaleset",
+            "type": "String"
+        },
+        "subnets_default_name": {
+            "defaultValue": "default",
+            "type": "String"
+        },
+        "service_bus_name" :{
+            "defaultValue": "default",
+            "type": "String",
+            "metadata": {
+                "description": "Name of Service Bus"
+            }
+        },
+        "resgrp_name_for_bus_and_storage" :{
+            "defaultValue": "default",
+            "type": "String",
+            "metadata": {
+                "description": "The name of the resource group that the service bus and storage account belong."
+            }
+        },
+        "autoscalesettings_testscaleset1_metricResourceUri": {
+            "defaultValue": "[concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/', parameters('resgrp_name_for_bus_and_storage'),'/providers/Microsoft.ServiceBus/namespaces/',parameters('service_bus_name'),'/queues/jlmtestqueue1')]",
+            "type": "String"
+        },
+        "autoscalesettings_testscaleset1_metricResourceUri_1": {
+            "defaultValue": "[concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/', parameters('resgrp_name_for_bus_and_storage'),'/providers/Microsoft.ServiceBus/namespaces/',parameters('service_bus_name'),'/queues/jlmtestqueue1')]",
+            "type": "String"
+        },
+        "loadBalancers_testscalesetlb_id": {
+            "defaultValue": "[concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/', resourceGroup().name,'/providers/Microsoft.Network/loadBalancers/',parameters('loadBalancers_testscalesetlb_name'),'/frontendIPConfigurations/LoadBalancerFrontEnd')]",
+            "type": "String"
+        },
+        "loadBalancers_testscalesetlb_id_1": {
+            "defaultValue": "[concat('/subscriptions/', subscription().subscriptionId,'/resourceGroups/', resourceGroup().name,'/providers/Microsoft.Network/loadBalancers/',parameters('loadBalancers_testscalesetlb_name'),'/frontendIPConfigurations/LoadBalancerFrontEnd')]",
+            "type": "String"
+        }
+    },
+    "variables": {},
+    "resources": [
+        {
+            "comments": "don't read this",
+            "type": "Microsoft.Compute/virtualMachineScaleSets",
+            "sku": {
+                "name": "Standard_A1",
+                "tier": "Standard",
+                "capacity": 1
+            },
+            "name": "[parameters('virtualMachineScaleSets_testscaleset_name')]",
+            "apiVersion": "2017-03-30",
+            "location": "[resourceGroup().location]",
+            "scale": null,
+            "properties": {
+                "singlePlacementGroup": true,
+                "upgradePolicy": {
+                    "mode": "Manual"
+                },
+                "virtualMachineProfile": {
+                    "osProfile": {
+                        "computerNamePrefix": "testscale",
+                        "adminUsername": "vmsstest",
+                        "adminPassword": "$Password123",
+                        "linuxConfiguration": {
+                            "disablePasswordAuthentication": false
+                        },
+                        "secrets": []
+                    },
+                    "extensionProfile": {
+                        "extensions": [
+                            {
+                                "name": "lapextension",
+                                "properties": {
+                                    "publisher": "Microsoft.Azure.Extensions",
+                                    "type": "CustomScript",
+                                    "typeHandlerVersion": "2.0",
+                                    "autoUpgradeMinorVersion": true,
+                                    "settings": {
+                                        "fileUris": [
+                                        "https://github.com/j-l-m/testrepo/raw/master/setup.sh"
+                                        ],
+                                        "commandToExecute": "bash setup.sh"
+                                    }
+                                }
+                            }
+                        ]
+                    },
+                    "storageProfile": {
+                        "osDisk": {
+                            "createOption": "FromImage",
+                            "caching": "ReadWrite",
+                            "managedDisk": {
+                                "storageAccountType": "Standard_LRS"
+                            }
+                        },
+                        "imageReference": {
+                            "publisher": "Canonical",
+                            "offer": "UbuntuServer",
+                            "sku": "16.04-LTS",
+                            "version": "latest"
+                        }
+                    },
+                    "networkProfile": {
+                        "networkInterfaceConfigurations": [
+                            {
+                                "name": "[concat(parameters('virtualMachineScaleSets_testscaleset_name'),'Nic')]",
+                                "properties": {
+                                    "primary": true,
+                                    "enableAcceleratedNetworking": false,
+                                    "dnsSettings": {
+                                        "dnsServers": []
+                                    },
+                                    "ipConfigurations": [
+                                        {
+                                            "name": "[concat(parameters('virtualMachineScaleSets_testscaleset_name'),'IpConfig')]",
+                                            "properties": {
+                                                "subnet": {
+                                                    "id": "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_testscalesetVnet_name'), parameters('subnets_default_name'))]"
+                                                },
+                                                "privateIPAddressVersion": "IPv4",
+                                                "loadBalancerBackendAddressPools": [
+                                                    {
+                                                        "id": "[concat(resourceId('Microsoft.Network/loadBalancers', parameters('loadBalancers_testscalesetlb_name')), '/backendAddressPools/bepool')]"
+                                                    }
+                                                ],
+                                                "loadBalancerInboundNatPools": [
+                                                    {
+                                                        "id": "[concat(resourceId('Microsoft.Network/loadBalancers', parameters('loadBalancers_testscalesetlb_name')), '/inboundNatPools/natpool')]"
+                                                    }
+                                                ]
+                                            }
+                                        }
+                                    ]
+                                }
+                            }
+                        ]
+                    }
+                },
+                "overprovision": true
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks/subnets', parameters('virtualNetworks_testscalesetVnet_name'), parameters('subnets_default_name'))]",
+                "[resourceId('Microsoft.Network/loadBalancers', parameters('loadBalancers_testscalesetlb_name'))]"
+            ]
+        },
+        {
+            "comments": "don't read this",
+            "type": "microsoft.insights/autoscalesettings",
+            "name": "[parameters('autoscalesettings_testscaleset1_name')]",
+            "apiVersion": "2014-04-01",
+            "location": "[resourceGroup().location]",
+            "tags": {},
+            "scale": null,
+            "properties": {
+                "profiles": [
+                    {
+                        "name": "Auto created scale condition",
+                        "capacity": {
+                            "minimum": "1",
+                            "maximum": "4",
+                            "default": "1"
+                        },
+                        "rules": [
+                            {
+                                "metricTrigger": {
+                                    "metricName": "Percentage CPU",
+                                    "metricNamespace": "",
+                                    "metricResourceUri": "[resourceId('Microsoft.Compute/virtualMachineScaleSets', parameters('virtualMachineScaleSets_testscaleset_name'))]",
+                                    "timeGrain": "PT1M",
+                                    "statistic": "Average",
+                                    "timeWindow": "PT5M",
+                                    "timeAggregation": "Average",
+                                    "operator": "GreaterThanOrEqual",
+                                    "threshold": 25
+                                },
+                                "scaleAction": {
+                                    "direction": "Increase",
+                                    "type": "ChangeCount",
+                                    "value": "1",
+                                    "cooldown": "PT5M"
+                                }
+                            },
+                            {
+                                "metricTrigger": {
+                                    "metricName": "ActiveMessageCount",
+                                    "metricNamespace": "",
+                                    "metricResourceUri": "[parameters('autoscalesettings_testscaleset1_metricResourceUri')]",
+                                    "timeGrain": "PT1M",
+                                    "statistic": "Sum",
+                                    "timeWindow": "PT5M",
+                                    "timeAggregation": "Average",
+                                    "operator": "GreaterThan",
+                                    "threshold": 10000
+                                },
+                                "scaleAction": {
+                                    "direction": "Increase",
+                                    "type": "ChangeCount",
+                                    "value": "1",
+                                    "cooldown": "PT5M"
+                                }
+                            },
+                            {
+                                "metricTrigger": {
+                                    "metricName": "ActiveMessageCount",
+                                    "metricNamespace": "",
+                                    "metricResourceUri": "[parameters('autoscalesettings_testscaleset1_metricResourceUri')]",
+                                    "timeGrain": "PT1M",
+                                    "statistic": "Sum",
+                                    "timeWindow": "PT5M",
+                                    "timeAggregation": "Average",
+                                    "operator": "GreaterThan",
+                                    "threshold": 20000
+                                },
+                                "scaleAction": {
+                                    "direction": "Increase",
+                                    "type": "ChangeCount",
+                                    "value": "1",
+                                    "cooldown": "PT5M"
+                                }
+                            },
+                            {
+                                "metricTrigger": {
+                                    "metricName": "ActiveMessageCount",
+                                    "metricNamespace": "",
+                                    "metricResourceUri": "[parameters('autoscalesettings_testscaleset1_metricResourceUri_1')]",
+                                    "timeGrain": "PT1M",
+                                    "statistic": "Sum",
+                                    "timeWindow": "PT5M",
+                                    "timeAggregation": "Average",
+                                    "operator": "LessThanOrEqual",
+                                    "threshold": 10000
+                                },
+                                "scaleAction": {
+                                    "direction": "Decrease",
+                                    "type": "ChangeCount",
+                                    "value": "1",
+                                    "cooldown": "PT5M"
+                                }
+                            }
+                        ]
+                    }
+                ],
+                "enabled": true,
+                "name": "[parameters('autoscalesettings_testscaleset1_name')]",
+                "targetResourceUri": "[resourceId('Microsoft.Compute/virtualMachineScaleSets', parameters('virtualMachineScaleSets_testscaleset_name'))]"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Compute/virtualMachineScaleSets', parameters('virtualMachineScaleSets_testscaleset_name'))]"
+            ]
+        },
+        {
+            "comments": "don't read this",
+            "type": "Microsoft.Network/loadBalancers",
+            "name": "[parameters('loadBalancers_testscalesetlb_name')]",
+            "apiVersion": "2017-06-01",
+            "location": "[resourceGroup().location]",
+            "scale": null,
+            "properties": {
+                "provisioningState": "Succeeded",
+                "resourceGuid": "fda6f39c-9f14-4e3d-b4c3-0971bd91b4db",
+                "frontendIPConfigurations": [
+                    {
+                        "name": "LoadBalancerFrontEnd",
+                        "etag": "W/\"805ffebb-6c01-4f63-9d1e-e3dcdf57998c\"",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "privateIPAllocationMethod": "Dynamic",
+                            "publicIPAddress": {
+                                "id": "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddresses_publicipaddress_name'))]"
+                            }
+                        }
+                    }
+                ],
+                "backendAddressPools": [
+                    {
+                        "name": "bepool",
+                        "etag": "W/\"805ffebb-6c01-4f63-9d1e-e3dcdf57998c\"",
+                        "properties": {
+                            "provisioningState": "Succeeded"
+                        }
+                    }
+                ],
+                "loadBalancingRules": [],
+                "probes": [],
+                "inboundNatRules": [],
+                "outboundNatRules": [],
+                "inboundNatPools": [
+                    {
+                        "name": "natpool",
+                        "etag": "W/\"805ffebb-6c01-4f63-9d1e-e3dcdf57998c\"",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "frontendPortRangeStart": 50000,
+                            "frontendPortRangeEnd": 50119,
+                            "backendPort": 22,
+                            "protocol": "Tcp",
+                            "frontendIPConfiguration": {
+                                "id": "[parameters('loadBalancers_testscalesetlb_id_1')]"
+                            }
+                        }
+                    }
+                ]
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/publicIPAddresses', parameters('publicIPAddresses_publicipaddress_name'))]"
+            ]
+        },
+        {
+            "comments": "don't read this",
+            "type": "Microsoft.Network/publicIPAddresses",
+            "name": "[parameters('publicIPAddresses_publicipaddress_name')]",
+            "apiVersion": "2017-06-01",
+            "location": "[resourceGroup().location]",
+            "scale": null,
+            "properties": {
+                "provisioningState": "Succeeded",
+                "resourceGuid": "a5636432-d33f-40ca-b6da-331208cf7327",
+                "ipAddress": "13.65.209.156",
+                "publicIPAddressVersion": "IPv4",
+                "publicIPAllocationMethod": "Dynamic",
+                "idleTimeoutInMinutes": 4,
+                "dnsSettings": {
+                    "domainNameLabel": "testloadbalancer",
+                    "fqdn": "testloadbalancer.southcentralus.cloudapp.azure.com"
+                }
+            },
+            "dependsOn": []
+        },
+        {
+            "comments": "don't read this",
+            "type": "Microsoft.Network/virtualNetworks",
+            "name": "[parameters('virtualNetworks_testscalesetVnet_name')]",
+            "apiVersion": "2017-06-01",
+            "location": "[resourceGroup().location]",
+            "scale": null,
+            "properties": {
+                "provisioningState": "Succeeded",
+                "resourceGuid": "6ded4247-9661-4527-a904-44b0207ab259",
+                "addressSpace": {
+                    "addressPrefixes": [
+                        "10.0.0.0/16"
+                    ]
+                },
+                "subnets": [
+                    {
+                        "name": "default",
+                        "etag": "W/\"348660a2-650b-483e-9993-cc0d7204af22\"",
+                        "properties": {
+                            "provisioningState": "Succeeded",
+                            "addressPrefix": "10.0.0.0/21"
+                        }
+                    }
+                ],
+                "virtualNetworkPeerings": []
+            },
+            "dependsOn": []
+        },
+        {
+            "comments": "don't read this",
+            "type": "Microsoft.Network/virtualNetworks/subnets",
+            "name": "[concat(parameters('virtualNetworks_testscalesetVnet_name'), '/', parameters('subnets_default_name'))]",
+            "apiVersion": "2017-06-01",
+            "scale": null,
+            "properties": {
+                "provisioningState": "Succeeded",
+                "addressPrefix": "10.0.0.0/21"
+            },
+            "dependsOn": [
+                "[resourceId('Microsoft.Network/virtualNetworks', parameters('virtualNetworks_testscalesetVnet_name'))]"
+            ]
+        }
+    ]
+}
