@@ -17,13 +17,13 @@ def rec_messages(process_name):
 
 	#create service bus service object
 	bus_service = ServiceBusService(
-		service_namespace='jlmtestservicebus1',
+		service_namespace='jlm4dde996c8a5680751',
 		shared_access_key_name='RootManageSharedAccessKey',
-		shared_access_key_value='Bdlyngz0JiuScJjBoFEDBJiDTPNB9DCNZFj4cqm49D4=')
+		shared_access_key_value='ZPvfBo7KrZAf5zG+gs1MS4kSvCbcI4/uSfDDd/+rF3c=')
 
 	#storage account credentials
-	store_account_name = 'jlmteststorage1'
-	store_account_key  = 'f9LanXceS3/JujWIH9f6xKxhYmCUEf3XlwBeDUUSMBdvSZcpsII5/I+4VxpkbVtBhe1CW//lBoLBSGzpWfR9eQ=='
+	store_account_name = 'jlm4dde996c8a5680751'
+	store_account_key  = 'SarGXuo2SGJEk2GpKWH1a3vBG9H0d+V0/y6BxYCfy/8GSCa1IAl18SX7VgBW6dVQxGwqJXHpQfDZ3amADYdqwA=='
 
 	#create storage table service object
 	table_service = TableService(
