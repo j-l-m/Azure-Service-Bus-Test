@@ -33,7 +33,7 @@ The template deploys the VM Scale Set that will receive messages from the servic
 	- This was necessary to get the required output. 
 	- Multiprocessing was used but the code seems to be bound by the network operation of sending messages. This resulted in poor CPU utilisation and slow message sending.
 	- Monitor the message count of the service bus with either the monitor.py script or use the metrics on the azure portal
-	- Use Ctrl+C to close the terminals when the 600 000 messages are generated.
+	- Use **Ctrl+C** to close the terminals when the 600 000 messages are generated.
 **NOTE: Close each terminal individually with Ctrl+C and wait for the processes to end. Closing the window early can cause the processes to hang or remain running in the background.**
 
 4. Deploy the template. Follow the instructions for deploying described above.
