@@ -3,7 +3,7 @@
 1. A resource group containing the service bus and storage account must already be set up
 2. The service bus must already have a queue called **jlmtestqueue1**
 3. The storage account must have:
-	- A queue called **jlmtestregqueue1"
+	- A queue called **jlmtestregqueue1**
 	- A table called **req**
 	- A table called **fail**
 4. If the service bus or storage account names/keys have changed then they will have to be changed in the python scripts as well.
