@@ -11,7 +11,7 @@ def monitor_failures():
 		shared_access_key_name='RootManageSharedAccessKey',
 		shared_access_key_value='ZPvfBo7KrZAf5zG+gs1MS4kSvCbcI4/uSfDDd/+rF3c=')
 
-	store_account_name = 'ZPvfBo7KrZAf5zG+gs1MS4kSvCbcI4/uSfDDd/+rF3c='
+	store_account_name = 'jlm4dde996c8a5680751'
 	store_account_key  = 'SarGXuo2SGJEk2GpKWH1a3vBG9H0d+V0/y6BxYCfy/8GSCa1IAl18SX7VgBW6dVQxGwqJXHpQfDZ3amADYdqwA=='
 
 	queue_service = QueueService(
@@ -20,7 +20,8 @@ def monitor_failures():
 
 
 	queue_name = 'jlmtestregqueue1'
-	sys.stdout.write('\n')
+	sys.stdout.write("\n")
+
 
 	try:
 		while 1:
@@ -28,12 +29,12 @@ def monitor_failures():
 			count = metadata.approximate_message_count
 			sbq_count = bus_service.get_queue('jlmtestqueue1').message_count
 			t = time.strftime("%H:%M:%S")
-			output = 'Messages on Service bus: %d \t Failures stored: %d   Time: %s' %(sbq_count, count, t)
-			sys.stdout.write(output + '\r')
+			output = "Messages on Service bus: %d\tFailures stored: %d   Time: %s" % (sbq_count, count, t)
+			sys.stdout.write(output + "\r")
 			sys.stdout.flush()
 			time.sleep(10)
 
 	except KeyboardInterrupt:
-			print('\nKeyboard Interrupt')		
+			print('\nKeyboard Interrupt')
 
 monitor_failures()
