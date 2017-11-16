@@ -1,4 +1,4 @@
-#Pre-requisites:
+# Pre-requisites:
 
 1. A resource group containing the service bus and storage account must already be set up
 2. The service bus must already have a queue called **jlmtestqueue1**
@@ -10,7 +10,7 @@
 5. Python 3.6 is required as well as the azure SDK for python.
 	- pip install azure
 
-#Deploying
+# Deploying
 When deploying the template, the following two fields must be changed in the Settings section of the deployment screen in Azure portal
 - **service_bus_name**   this is the name or namespace for the service bus
 - **resgrp_name_for_bus_and_storage**   this is the name of the resource group containing the service bus and storage account
@@ -18,7 +18,7 @@ When deploying the template, the following two fields must be changed in the Set
 The template deploys the VM Scale Set that will receive messages from the service bus queue and store them in the storage account.
 
 
-#Steps
+# Steps
 1. Download the following files and place them in the same folder:
 	- **monitor.py**
 	- **send_msgs.py**
