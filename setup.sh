@@ -6,8 +6,8 @@ sudo apt-get install -y python-pip
 pip install azure
 
 
-wget https://github.com/j-l-m/testrepo/raw/master/cloud_7.py
+wget https://github.com/j-l-m/testrepo/raw/master/rec_msgs.py
 
-nohup python cloud_7.py &
-nohup python cloud_7.py &
+nohup python rec_msgs.py &
+nohup python rec_msgs.py &
 
