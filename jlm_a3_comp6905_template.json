@@ -63,7 +63,7 @@
             "comments": "don't read this",
             "type": "Microsoft.Compute/virtualMachineScaleSets",
             "sku": {
-                "name": "Standard_A1",
+                "name": "Standard_B1s",
                 "tier": "Standard",
                 "capacity": 1
             },
